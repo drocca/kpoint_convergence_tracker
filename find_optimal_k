@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+from run_qe import run_pwx
+import sys
+import os
+import numpy as np
+from parse_pw import parse_pwin_nmlist, cards_pwin, pwout_scf
+
+def check_arguments():
+    """Checking that the command line arguments are correct"""
+
+    if (len(sys.argv)!=3):
+        print "Correct use: ./find_optimal_k  </path/pw_input_file> <cutoff>"
+        sys.exit('Wrong number of arguments')
+
+    try:
+        float(sys.argv[2])
+    except ValueError:
+        sys.exit('Last argument must be a float')
+
+#def update_kpoints()
+
+def convk_energy(thr):
+    """
+    Finds the optimal k-point grid using the tot energy/n electrons as criterion 
+    (as total energy is extensive it is better to normalize it with n electrons)
+    thr: When increasing the k grid the change in energy is < thr (in Ry) the code stops the search  
+    """
+
+    # check that the script is being properly used
+    check_arguments()
+
+    print ""
+    print "TESTING K-POINT CONVERGENCE"
+    print ""
+
+    # This is just for a quick testing 
+
+    # pw.x input file from command line
+    name_pwin = str(sys.argv[1])
+
+    # parsing namelists
+    pw_nml = parse_pwin_nmlist(name_pwin)
+
+    # number of types and number of atoms
+    n_typ = pw_nml["system"]["ntyp"]
+    n_at = pw_nml["system"]["nat"]
+
+    # parsing cards
+    pw_cards = cards_pwin()
+    pw_cards.read(name_pwin,n_typ,n_at)
+
+    # for simplicity the calculations will be done in the directory of the input file 
+    # for example, this avoids issues with the psudopotential directory
+    current_dir = os.getcwd() # current directory
+    work_directory = os.path.dirname(sys.argv[1])
+    os.chdir(work_directory)
+
+    # setting up the output directory 
+    pw_nml['control']['outdir']="./tmp_kconv"
+    # setting up the cutoff from input
+    pw_nml['system']['ecutwfc']=float(sys.argv[2])
+    # just in case the calculation is forced to be scf
+    pw_nml['control']['calculation']="scf"
+
+    # variable of the class pwout_scf used to store information from pw.x's output
+    scfout = pwout_scf()
+   
+    tot_en_elec_old = 0.0
+
+    for i in range(1,21):
+
+        print ""
+        print "Calculation for k-grid "+str(i)
+        print ""
+
+        pw_cards.set_kgrid_auto(np.asarray([i, i, i, 0, 0, 0],dtype='int'))
+
+        # writing the new pw.x input file with the cutoff provided
+        # on command line and a variable grid of k-points 
+        with open("scf_kconv.in", 'w') as fout:
+            pw_nml.write(fout)
+            pw_cards.write(fout)
+
+        run_pwx("scf_kconv.in","scf_kconv.out")
+        
+        # reading the output
+        scfout.read("scf_kconv.out",n_at)
+        print "Total energy: "+str(scfout.tot_energy) 
+
+        # total energy per electron (in Ry)
+        tot_en_elec = scfout.tot_energy / scfout.n_elec
+
+        if ( np.absolute(tot_en_elec-tot_en_elec_old) < thr):
+            print ""
+            print "Optimal k-point mesh (change in total energy/n electrons < "+str(thr)+" Ry)"  
+            print i-1
+            break
+        else:
+            tot_en_elec_old=tot_en_elec
+
+    # removing the files created during the convergence test
+    os.system("rm -rf scf_kconv.in scf_kconv.out tmp_kconv")
+
+    # go back to the original directory
+    os.chdir(current_dir)
+
+if __name__ == '__main__':
+    convk_energy(0.00005)
