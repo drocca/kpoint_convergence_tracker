@@ -12,9 +12,7 @@ def parse_pwin_nmlist(filein):
     return nml
 
 class cards_pwin():
-    """
-    Class defined to store the cards in the pw.x input 
-    """
+    """ Class defined to store the information contained in the cards of the pw.x input """
 
     def __init__(self):
 
@@ -22,7 +20,7 @@ class cards_pwin():
         # .atomic_species["Si"]["pseudopot"] the pseudopotential
         self.atomic_species={} 
 
-        # Example: .atomic_positions[2]["element"] will give the name of the second element in the list of atoms
+        # Example: .atomic_positions[2]["element"] will give the type of the second element in the list of atoms
         # .atomic_positions[2]["position"] its position (numpy array)
         self.atomic_positions={}
 
@@ -33,7 +31,7 @@ class cards_pwin():
         self.k_points_auto=np.asarray([1, 1, 1, 0, 0, 0], dtype="int")
 
         # If K_POINTS is not automatic or gamma
-        # this list will contain nk 4 component 1D array with k-point and weight  
+        # this list will contain nk 4 component 1D arrays with k-points and weights 
         self.k_points_list=[]
 
         self.unit_pos = "alat"
@@ -42,6 +40,12 @@ class cards_pwin():
         self.nk = 0 
 
     def read(self, pwin, ntyp, nat):
+        """ 
+        Reads from pwin and set up the attributes of the class cards_pwin from the input 
+        pwin: pw.x input file
+        ntyp: Number of types of atoms
+        nat: Number of atoms    
+        """
 
         # Open pw.x input file
         with open(pwin, "r") as f:
@@ -68,7 +72,7 @@ class cards_pwin():
 
             if ("ATOMIC_POSITIONS" in lines[i]):
 
-                # Determines the units; is none use consider alat 
+                # Determines the units; if none is provided it uses alat 
                 ap_optionlist = ["alat", "bohr", "angstrom", "crystal_sg", "crystal"]
                 apu = filter(lambda x: x in lines[i], ap_optionlist)
                 if not apu:
@@ -92,14 +96,14 @@ class cards_pwin():
                 else:
                     self.unit_cellp = cpu[0]
 
-                # Set up a list with 3 vectors corresponding to the cell parameters
+                # Set up a list with 3 arrays corresponding to the cell parameters
                 for j in range(i+1, i+4):
                     self.cell_parameters.append(np.asarray(lines[j].split(),dtype="float"))
 
             if ("K_POINTS" in lines[i]):
 
                 # Determines if k-points is automatic, gamma, or explicit list of k-points 
-                # If list of k-points it determines the units
+                # If list of k-points, it determines the units
                 k_optionlist = ["automatic", "gamma", "tpiba_b" , "tpiba_c", "tpiba", "crystal_b", "crystal_c", "crystal"]
                 kt = filter(lambda x: x in lines[i], k_optionlist)
                 if not kt:
@@ -107,10 +111,12 @@ class cards_pwin():
                 else:
                     self.ktype = kt[0]
 
+                # If k-points is automatic, the grid and shift are stored
                 if (self.ktype == "automatic"):
 
                     self.k_points_auto = np.asarray(lines[i+1].split(),dtype="int") 
 
+                # If not automatic or gamma the full list of k-points is stored 
                 elif (self.ktype != "gamma") and (self.ktype != "automatic"):
                     self.nk = int(lines[i+1].split()[0])
                     
@@ -118,9 +124,9 @@ class cards_pwin():
                     for j in range(i+2, i+2+self.nk):
                         self.k_points_list.append(np.asarray(lines[j].split(),dtype="float"))
 
+            # These cards are not (yet) implemented
             if ("OCCUPATIONS" in lines[i]):
                 sys.exit("Parsing of OCCUPATIONS not implemented")
-
 
             if ("CONSTRAINTS" in lines[i]):
                 sys.exit("Parsing of CONSTRAINTS not implemented")
@@ -160,10 +166,91 @@ class cards_pwin():
             fout.write(str(self.nk)+"\n")
             for i in range(0, self.nk):  
                 fout.write(('%12.8f %12.8f %12.8f %12.8f'%tuple(self.k_points_list[i])).strip()+"\n")
+       
+        return
 
+    def set_kgrid_auto(self,grid_new):
+        """ 
+        Set up the k-points to automatic 
+        grid_new: numpy array with the size of the grid and the shift
+        Example: [2 2 2 0 0 0] 
+        """
+        self.ktype = "automatic"
+        self.k_points_auto = grid_new         
         return 
 
+class pwout_scf():
+    """
+    Class defined to store some information from the output of pw.x
+    (a small subset of the information contained in this file) 
+    """
+
+    def __init__(self):
+
+        # total energy
+        self.tot_energy = 0.0
+
+        # number of electrons; it's useful because the tot energy is an extensive quantity
+        self.n_elec = 0
+
+        # Forces
+        self.forces = []
+
+        # Stress tensor
+        self.stress = []
+
+        # Reciprocal lattice axes (useful to study k-point convergence) 
+        self.rec_axes = []
+        
+    def read(self, pwout, nat):
+        """
+        Reads from pwout and setup the attributes of the class pwout_scf 
+        pwout: output of a scf calculation of pw.x
+        nat: number of atoms
+        """
+
+        # Open pw.x output file (scf calculation)
+        with open(pwout, "r") as f:
+            lines_tot = f.readlines()
+
+        # Eliminates empty lines
+        lines= []
+        for i in range(0, len(lines_tot)):
+            if not lines_tot[i].strip():
+                continue
+            else:
+                lines.append(lines_tot[i].strip())
+
+
+        for i in range(0, len(lines)):
+
+            if (lines[i][0] == "!"):
+                ll = lines[i].split() 
+                self.tot_energy = np.float(ll[4])
+
+            if ("number of electrons" in lines[i]):
+                ll = lines[i].split()
+                self.n_elec = np.float(ll[4]) 
+
+            if ("Forces" in lines[i]):
+                for counter, j in enumerate(range(i+1, i+1+nat)):
+                    ll = lines[j].split()
+                    self.forces.extend([ll[6], ll[7], ll[8]])
+
+            if ("total   stress" in lines[i]):
+                for j in range(i+1, i+4):
+                    ll = lines[j].split()
+                    self.stress.extend([ll[0], ll[1], ll[2]])
+
+            if ("reciprocal axes" in lines[i]):
+                for j in range(i+1, i+4):
+                    ll = lines[j].split()
+                    self.rec_axes.append(np.asarray([ll[3], ll[4], ll[5]],dtype='float'))
+
+
 if __name__ == '__main__':
+
+    # This is just for a quick testing 
 
     # pw.x input file
     name_pwin = 'scf.in'
@@ -182,3 +269,16 @@ if __name__ == '__main__':
     with open("scf_parsed.in", 'w') as fout:
         pw_nml.write(fout)
         pw_cards.write(fout) 
+
+    # pw.x output file of a scf calculation
+    name_scfout = 'scf.out'
+ 
+    # parsing output
+    scfout = pwout_scf() 
+    scfout.read(name_scfout,n_at) 
+
+    print scfout.tot_energy
+    print scfout.n_elec
+    print scfout.forces
+    print scfout.stress 
+    print scfout.rec_axes
