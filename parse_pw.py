@@ -74,7 +74,7 @@ class cards_pwin():
 
                 # Determines the units; if none is provided it uses alat 
                 ap_optionlist = ["alat", "bohr", "angstrom", "crystal_sg", "crystal"]
-                apu = filter(lambda x: x in lines[i], ap_optionlist)
+                apu = filter(lambda x: x in lines[i].lower(), ap_optionlist)
                 if not apu:
                     self.unit_pos = "alat"
                 else:
@@ -90,7 +90,7 @@ class cards_pwin():
 
                 # Determines the units
                 cp_optionlist = ["alat", "bohr", "angstrom"]
-                cpu = filter(lambda x: x in lines[i], cp_optionlist) 
+                cpu = filter(lambda x: x in lines[i].lower(), cp_optionlist) 
                 if not cpu:
                     self.unit_cellp = "bohr"
                 else:
@@ -105,7 +105,7 @@ class cards_pwin():
                 # Determines if k-points is automatic, gamma, or explicit list of k-points 
                 # If list of k-points, it determines the units
                 k_optionlist = ["automatic", "gamma", "tpiba_b" , "tpiba_c", "tpiba", "crystal_b", "crystal_c", "crystal"]
-                kt = filter(lambda x: x in lines[i], k_optionlist)
+                kt = filter(lambda x: x in lines[i].lower(), k_optionlist)
                 if not kt:
                     self.ktype = "tpiba"
                 else:

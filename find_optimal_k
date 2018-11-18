@@ -27,7 +27,7 @@ def convk_energy(thr):
     thr: When increasing the k grid the change in energy is < thr (in Ry) the code stops the search  
     """
 
-    # check that the script is being properly used
+    # checks that the script is being properly used
     check_arguments()
 
     print ""
@@ -51,16 +51,16 @@ def convk_energy(thr):
     pw_cards.read(name_pwin,n_typ,n_at)
 
     # for simplicity the calculations will be done in the directory of the input file 
-    # for example, this avoids issues with the psudopotential directory
+    # for example, this avoids potential issues with the psudopotential directory
     current_dir = os.getcwd() # current directory
     work_directory = os.path.dirname(sys.argv[1])
     os.chdir(work_directory)
 
     # setting up the output directory 
     pw_nml['control']['outdir']="./tmp_kconv"
-    # setting up the cutoff from input
+    # setting up the cutoff to the value provided on the command line
     pw_nml['system']['ecutwfc']=float(sys.argv[2])
-    # just in case the calculation is forced to be scf
+    # the calculation is forced to be scf
     pw_nml['control']['calculation']="scf"
 
     # variable of the class pwout_scf used to store information from pw.x's output
@@ -86,7 +86,7 @@ def convk_energy(thr):
         
         # reading the output
         scfout.read("scf_kconv.out",n_at)
-        print "Total energy: "+str(scfout.tot_energy) 
+        print "Total energy per electron: "+str(scfout.tot_energy/scfout.n_elec) 
 
         # total energy per electron (in Ry)
         tot_en_elec = scfout.tot_energy / scfout.n_elec
