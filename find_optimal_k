@@ -18,7 +18,38 @@ def check_arguments():
     except ValueError:
         sys.exit('Last argument must be a float')
 
-#def update_kpoints()
+def generate_kpoint_grids(b):
+    """
+    This function is used to generate a dictionary with all the grids that should be tested.
+    It keeps into account the anysotropy of the cell.
+    b: reciprocal lattice vectors
+    """
+
+    # initializing the grid dictionary
+    grid_dic = [np.asarray([1, 1, 1, 0, 0, 0], dtype="int")]
+
+    # the shift (offset) array
+    shift = np.asarray([0, 0, 0], dtype="int")
+
+    # the starting grid 
+    grid_tmp = np.asarray([1., 1., 1.], dtype="float")
+
+    # a tolerance threshold used to decide if the grid is increased in a certain direction
+    thr_grid = np.asarray([0.1, 0.1, 0.1], dtype="float")
+
+    # the (anisotropic) step used to progressively increase the grid
+    # example: k_grid_step=[1. 1. 0.25] means that the last reciprocal axis is shorter
+    # and less k-points will be sampled in that direction 
+    recaxes_norm = np.linalg.norm(b,axis=1)
+    k_grid_step = recaxes_norm/np.amax(recaxes_norm)
+
+    # creates the grids by progressively summing the step k_grid_step 
+    for i in range(0,21):
+        grid_tmp+=k_grid_step
+        grid = (grid_tmp+thr_grid).astype(int)
+        grid_dic.append(np.concatenate((grid,shift),axis=None))
+
+    return grid_dic
 
 def convk_energy(thr):
     """
@@ -62,19 +93,44 @@ def convk_energy(thr):
     pw_nml['system']['ecutwfc']=float(sys.argv[2])
     # the calculation is forced to be scf
     pw_nml['control']['calculation']="scf"
+    # to avoid to waste too much time in a non-converging calculation electron_maxstep is set to 40
+    pw_nml['electrons']['electron_maxstep']=40
+    # for the optimal grid search K_POINTS is forced to be automatic
+    pw_cards.ktype = "automatic"
 
     # variable of the class pwout_scf used to store information from pw.x's output
     scfout = pwout_scf()
-   
-    tot_en_elec_old = 0.0
 
-    for i in range(1,21):
+    print ""
+    print "Calculation for k-grid 1 1 1 0 0 0"
+    print ""
+
+    # runs a first calculation with grid 1 1 1 0 0 0 
+    pw_cards.set_kgrid_auto(np.asarray([1, 1, 1, 0, 0, 0],dtype='int'))
+
+    # writing the new pw.x input file with the cutoff provided
+    # on command line and a variable grid of k-points 
+    with open("scf_kconv.in", 'w') as fout:
+        pw_nml.write(fout)
+        pw_cards.write(fout)
+
+    # running the pw.x calculation
+    run_pwx("scf_kconv.in","scf_kconv.out")
+
+    # reading the output
+    scfout.read("scf_kconv.out",n_at)
+    print "Total energy per electron: "+str(scfout.tot_energy/scfout.n_elec)
+    tot_en_elec_old = scfout.tot_energy/scfout.n_elec
+
+    grid_k = generate_kpoint_grids(scfout.rec_axes)
+
+    for i in range(1,22):
 
         print ""
-        print "Calculation for k-grid "+str(i)
+        print "Calculation for k-grid "+str(grid_k[i][0])+" "+str(grid_k[i][1])+" "+str(grid_k[i][2])+" 0 0 0"
         print ""
 
-        pw_cards.set_kgrid_auto(np.asarray([i, i, i, 0, 0, 0],dtype='int'))
+        pw_cards.set_kgrid_auto(grid_k[i])
 
         # writing the new pw.x input file with the cutoff provided
         # on command line and a variable grid of k-points 
@@ -82,6 +138,7 @@ def convk_energy(thr):
             pw_nml.write(fout)
             pw_cards.write(fout)
 
+        # running the pw.x calculation
         run_pwx("scf_kconv.in","scf_kconv.out")
         
         # reading the output
@@ -94,13 +151,13 @@ def convk_energy(thr):
         if ( np.absolute(tot_en_elec-tot_en_elec_old) < thr):
             print ""
             print "Optimal k-point mesh (change in total energy/n electrons < "+str(thr)+" Ry)"  
-            print i-1
+            print str(grid_k[i-1][0])+" "+str(grid_k[i-1][1])+" "+str(grid_k[i-1][2])+" 0 0 0"
             break
         else:
             tot_en_elec_old=tot_en_elec
 
     # removing the files created during the convergence test
-    os.system("rm -rf scf_kconv.in scf_kconv.out tmp_kconv")
+#    os.system("rm -rf scf_kconv.in scf_kconv.out tmp_kconv")
 
     # go back to the original directory
     os.chdir(current_dir)
