@@ -209,6 +209,12 @@ class pwout_scf():
         nat: number of atoms
         """
 
+        self.tot_energy = 0.0
+        self.n_elec = 0
+        self.forces = []
+        self.stress = []
+        self.rec_axes = []
+
         # Open pw.x output file (scf calculation)
         with open(pwout, "r") as f:
             lines_tot = f.readlines()
