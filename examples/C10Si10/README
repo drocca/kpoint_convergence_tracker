@@ -33,5 +33,3 @@ Total energy per electron: -2.41269914425
 
 Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
 6 6 1 0 0 0
-
-TESTING K-POINT CONVERGENCE
