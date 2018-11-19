@@ -257,6 +257,7 @@ class pwout_scf():
 if __name__ == '__main__':
 
     # This is just for a quick testing 
+    # It requires the input and otput of pw.x to be in the same directory
 
     # pw.x input file
     name_pwin = 'scf.in'
