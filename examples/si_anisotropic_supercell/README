@@ -1,0 +1,41 @@
+System: Bulk silicon with its primitive cell repeated twice in the direction of the first axis (2x1x1 supercell).
+To be noticed that the code finds 4 7 7 instead of the "expected" 4 8 8 considering the convergence study of the primitive cell (available in the silicon/ directory). This is due to the fact that the code explores different k-point point grids for the supercell and the primitive cell. For example, the converged supercell grid 4 7 7 corresponds to 8 7 7 in the primitive cell, which the code would never consider for an isotropic system. 
+
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -1.88959835063
+
+Calculation for k-grid 1 2 2 0 0 0
+
+Total energy per electron: -1.95684036438
+
+Calculation for k-grid 2 3 3 0 0 0
+
+Total energy per electron: -1.97777968563
+
+Calculation for k-grid 2 4 4 0 0 0
+
+Total energy per electron: -1.97918906938
+
+Calculation for k-grid 3 5 5 0 0 0
+
+Total energy per electron: -1.98062017125
+
+Calculation for k-grid 3 6 6 0 0 0
+
+Total energy per electron: -1.98073579
+
+Calculation for k-grid 4 7 7 0 0 0
+
+Total energy per electron: -1.98091257875
+
+Calculation for k-grid 4 8 8 0 0 0
+
+Total energy per electron: -1.98092807563
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+4 7 7 0 0 0

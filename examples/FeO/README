@@ -1,0 +1,27 @@
+System: FeO
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -6.22994449857
+
+Calculation for k-grid 2 2 2 0 0 0
+
+Total energy per electron: -6.24034930607
+
+Calculation for k-grid 3 3 3 0 0 0
+
+Total energy per electron: 0.0
+
+Calculation for k-grid 4 4 4 0 0 0
+
+Total energy per electron: -6.24070543214
+
+Calculation for k-grid 5 5 5 0 0 0
+
+Total energy per electron: -6.2406556025
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+4 4 4 0 0 0

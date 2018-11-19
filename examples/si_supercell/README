@@ -1,0 +1,27 @@
+System: 2x2x2 supercell of silicon; the result is fully consistent with the primitive cell of silicon, where a 8x8x8 k-grid was found.
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -1.95684034844
+
+Calculation for k-grid 2 2 2 0 0 0
+
+Total energy per electron: -1.97918905813
+
+Calculation for k-grid 3 3 3 0 0 0
+
+Total energy per electron: -1.98073577906
+
+Calculation for k-grid 4 4 4 0 0 0
+
+Total energy per electron: -1.980928065
+
+Calculation for k-grid 5 5 5 0 0 0
+
+Total energy per electron: -1.98095867047
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+4 4 4 0 0 0

@@ -1,0 +1,42 @@
+ &control
+    calculation = 'scf'
+    restart_mode='from_scratch',
+    prefix='Si',
+    pseudo_dir = './',
+    outdir='./'
+ /
+ &system
+    ibrav=  0, nat=  16, ntyp= 1,
+    ecutwfc =18.0
+ /
+ &electrons
+    diagonalization='david'
+    mixing_mode = 'plain'
+    mixing_beta = 0.7
+    conv_thr =  1.0d-8
+ /
+CELL_PARAMETERS {bohr}
+-10.200000   0.000000   10.200000
+0.000000   10.200000   10.200000 
+-10.200000   10.200000   0.000000 
+ATOMIC_SPECIES
+ Si  28.086  Si.pz-vbc.UPF
+ATOMIC_POSITIONS {bohr}
+ Si 0.00 0.00 0.00
+ Si 2.55 2.55 2.55
+ Si -5.10 0.00 5.10
+ Si -2.55 2.55 7.65
+ Si 0.00 5.10 5.10
+ Si 2.55 7.65 7.65
+ Si -5.10 5.10 0.00
+ Si -2.55 7.65 2.55
+ Si -10.20 10.20 10.20
+ Si -7.65 12.75 12.75
+ Si -10.20 5.10 5.10
+ Si -7.65 7.65 7.65
+ Si -5.10 5.10 10.20
+ Si -2.55 7.65 12.75
+ Si -5.10 10.20 5.10
+ Si -2.55 12.75 7.65
+K_POINTS {automatic}
+2 2 2 0 0 0 

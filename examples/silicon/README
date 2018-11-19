@@ -1,0 +1,43 @@
+System: Bulk silicon in its primitive cell.
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -1.82114719125
+
+Calculation for k-grid 2 2 2 0 0 0
+
+Total energy per electron: -1.95684038
+
+Calculation for k-grid 3 3 3 0 0 0
+
+Total energy per electron: -1.97512291125
+
+Calculation for k-grid 4 4 4 0 0 0
+
+Total energy per electron: -1.97918908
+
+Calculation for k-grid 5 5 5 0 0 0
+
+Total energy per electron: -1.98035764
+
+Calculation for k-grid 6 6 6 0 0 0
+
+Total energy per electron: -1.98073579875
+
+Calculation for k-grid 7 7 7 0 0 0
+
+Total energy per electron: -1.9808759425
+
+Calculation for k-grid 8 8 8 0 0 0
+
+Total energy per electron: -1.980928085
+
+Calculation for k-grid 9 9 9 0 0 0
+
+Total energy per electron: -1.98095021375
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+8 8 8 0 0 0

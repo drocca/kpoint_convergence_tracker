@@ -1,0 +1,37 @@
+System: C10Si10 from the Aflow library
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -2.3286868305
+
+Calculation for k-grid 2 2 1 0 0 0
+
+Total energy per electron: -2.40165365875
+
+Calculation for k-grid 3 3 1 0 0 0
+
+Total energy per electron: -2.4103414785
+
+Calculation for k-grid 4 4 1 0 0 0
+
+Total energy per electron: -2.41212565287
+
+Calculation for k-grid 5 5 1 0 0 0
+
+Total energy per electron: -2.41254045275
+
+Calculation for k-grid 6 6 1 0 0 0
+
+Total energy per electron: -2.41266393462
+
+Calculation for k-grid 7 7 1 0 0 0
+
+Total energy per electron: -2.41269914425
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+6 6 1 0 0 0
+
+TESTING K-POINT CONVERGENCE

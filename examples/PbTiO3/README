@@ -1,0 +1,27 @@
+System: PbTiO3
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: 0.0
+
+Calculation for k-grid 2 2 2 0 0 0
+
+Total energy per electron: -7.58303101136
+
+Calculation for k-grid 3 3 3 0 0 0
+
+Total energy per electron: -7.58440429318
+
+Calculation for k-grid 4 4 4 0 0 0
+
+Total energy per electron: -7.58451508864
+
+Calculation for k-grid 5 5 5 0 0 0
+
+Total energy per electron: -7.58455000614
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+4 4 4 0 0 0

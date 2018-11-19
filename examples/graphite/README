@@ -1,0 +1,52 @@
+System: Graphite with an interlayer distance of
+about 4.4 Angstroms.
+
+TESTING K-POINT CONVERGENCE
+
+
+Calculation for k-grid 1 1 1 0 0 0
+
+Total energy per electron: -2.9273773225
+
+Calculation for k-grid 2 2 1 0 0 0
+
+Total energy per electron: -2.97036667125
+
+Calculation for k-grid 3 3 1 0 0 0
+
+Total energy per electron: -2.98460573812
+
+Calculation for k-grid 4 4 1 0 0 0
+
+Total energy per electron: -2.98995565812
+
+Calculation for k-grid 5 5 2 0 0 0
+
+Total energy per electron: -2.98946778188
+
+Calculation for k-grid 6 6 2 0 0 0
+
+Total energy per electron: 0.0
+
+Calculation for k-grid 7 7 2 0 0 0
+
+Total energy per electron: -2.98981101313
+
+Calculation for k-grid 8 8 2 0 0 0
+
+Total energy per electron: -2.98968878
+
+Calculation for k-grid 9 9 3 0 0 0
+
+Total energy per electron: -2.9895499475
+
+Calculation for k-grid 10 10 3 0 0 0
+
+Total energy per electron: -2.98973384875
+
+Calculation for k-grid 11 11 3 0 0 0
+
+Total energy per electron: -2.989698245
+
+Optimal k-point mesh (change in total energy/n electrons < 5e-05 Ry)
+10 10 3 0 0 0
